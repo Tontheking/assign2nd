@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter your username"required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password"required>
+        </div>
+        <button onclick="login()">Login</button>
+        <div class="error"></div>
+    </div>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script>
+        function login() {
+            const username = document.querySelector('#username').value;
+            const password = document.querySelector('#password').value;
+            const errorEl = document.querySelector('.error');
+            console.log(username, password);
+
+            if (username == '') {
+                errorEl.textContent = 'username is required';
+                return;
+            }
+            if (password == '') {
+                errorEl.textContent = 'password is required';
+                return;
+            }
+
+            if (username == 'admin' && password == '123') {
+                sessionStorage.setItem('isLoginSuccess', 'true');
+                sessionStorage.setItem('username', username);
+                window.location.href = "dashboard.html";
+                errorEl.textContent = '';
+            } else {
+                errorEl.textContent = 'Invalid username or password';
+            }
+        }
+    </script>
+</body>
+</html>
