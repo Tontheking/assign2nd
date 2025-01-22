@@ -68,15 +68,13 @@
                     <button type="submit" class="btn btn-primary w-100">Add News</button>
                 </form>
             </section>
-            
-            <section id="search-section" class="mb-5">
+                <section id="search-section" class="mb-5">
                 <form id="searchForm">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search News">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search News" oninput="inlineSearch()">
                     </div>
                 </form>
             </section>
-
             <section id="news-list">
                 <h2 class="text-success">All News</h2>
                 <ul id="news-container" class="list-group"></ul>
@@ -159,7 +157,37 @@
                 newsContainer.appendChild(li);
             });
         }
+        function inlineSearch() {
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+    const filteredArticles = newsArticles.filter(news => 
+        news.title.toLowerCase().includes(searchValue) ||
+        news.author.toLowerCase().includes(searchValue) ||
+        news.description.toLowerCase().includes(searchValue)
+    );
 
+    newsContainer.innerHTML = '';
+    if (filteredArticles.length === 0) {
+        newsContainer.innerHTML = '<p>No matching news found.</p>';
+        return;
+    }
+
+    filteredArticles.forEach((news, index) => {
+        const li = document.createElement('li');
+        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+        li.innerHTML = `
+            <div>
+                <h5><strong>${news.title}</strong></h5>
+                <p><strong>Author:</strong> ${news.author}</p>
+            </div>
+            <div>
+                <button class="btn btn-warning" onclick="viewDetails(${index})">View</button>
+                <button class="btn btn-secondary" onclick="editNews(${index})">Edit</button>
+                <button class="btn btn-danger" onclick="deleteNews(${index})">Delete</button>
+            </div>
+        `;
+        newsContainer.appendChild(li);
+    });
+}
         function viewDetails(index) {
             const news = newsArticles[index];
             document.getElementById('viewModalBody').innerHTML = `
