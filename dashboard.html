@@ -211,7 +211,6 @@
 
         function toggleImageSize(imgElement) {
             if (imgElement.style.position === 'fixed') {
-                // Return to normal size
                 imgElement.style.position = 'static';
                 imgElement.style.top = 'auto';
                 imgElement.style.left = 'auto';
@@ -221,7 +220,6 @@
                 imgElement.style.backgroundColor = 'transparent';
                 imgElement.style.margin = '10px 0';
             } else {
-                // Expand to full screen
                 imgElement.style.position = 'fixed';
                 imgElement.style.top = '0';
                 imgElement.style.left = '0';
