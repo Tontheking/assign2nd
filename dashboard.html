@@ -93,7 +93,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -123,6 +122,7 @@
                             <label for="editContent" class="form-label">Content:</label>
                             <textarea id="editContent" class="form-control" rows="5" required></textarea>
                         </div>
+                        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
                     </form>
                 </div>
             </div>
@@ -142,11 +142,12 @@
             }
             newsArticles.forEach((news, index) => {
                 const li = document.createElement('li');
-                li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
                 li.innerHTML = `
-                    <div>
+                    <div class="w-75">
                         <h5><strong>${news.title}</strong></h5>
                         <p><strong>Author:</strong> ${news.author}</p>
+                        ${news.image ? `<img src="${news.image}" alt="News image" style="max-width: 200px; margin: 10px 0;">` : ''}
                     </div>
                     <div>
                         <button class="btn btn-warning" onclick="viewDetails(${index})">View</button>
@@ -194,10 +195,43 @@
                 <p><strong>Title:</strong> ${news.title}</p>
                 <p><strong>Author:</strong> ${news.author}</p>
                 <p><strong>Description:</strong> ${news.description}</p>
+                ${news.image ? `
+                    <p><strong>Image:</strong><br>
+                    <img src="${news.image}" 
+                         alt="News image" 
+                         style="max-width: 100%; margin: 10px 0; cursor: pointer; transition: transform 0.3s ease;"
+                         onclick="toggleImageSize(this)"
+                         class="zoomable-image">
+                    </p>` : ''}
                 <p><strong>Content:</strong> ${news.content}</p>
             `;
             const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
             viewModal.show();
+        }
+
+        function toggleImageSize(imgElement) {
+            if (imgElement.style.position === 'fixed') {
+                // Return to normal size
+                imgElement.style.position = 'static';
+                imgElement.style.top = 'auto';
+                imgElement.style.left = 'auto';
+                imgElement.style.width = '100%';
+                imgElement.style.height = 'auto';
+                imgElement.style.zIndex = 'auto';
+                imgElement.style.backgroundColor = 'transparent';
+                imgElement.style.margin = '10px 0';
+            } else {
+                // Expand to full screen
+                imgElement.style.position = 'fixed';
+                imgElement.style.top = '0';
+                imgElement.style.left = '0';
+                imgElement.style.width = '100vw';
+                imgElement.style.height = '100vh';
+                imgElement.style.objectFit = 'contain';
+                imgElement.style.zIndex = '9999';
+                imgElement.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                imgElement.style.margin = '0';
+            }
         }
 
         function editNews(index) {
@@ -212,14 +246,33 @@
 
             document.getElementById('editNewsForm').onsubmit = function(event) {
                 event.preventDefault();
-                newsArticles[index] = {
-                    title: document.getElementById('editTitle').value,
-                    description: document.getElementById('editDescription').value,
-                    author: document.getElementById('editAuthor').value,
-                    content: document.getElementById('editContent').value,
-                };
-                displayNews();
-                editModal.hide();
+                const file = document.getElementById('imageUploader').files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        newsArticles[index] = {
+                            title: document.getElementById('editTitle').value,
+                            description: document.getElementById('editDescription').value,
+                            author: document.getElementById('editAuthor').value,
+                            content: document.getElementById('editContent').value,
+                            image: e.target.result
+                        };
+                        displayNews();
+                        editModal.hide();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    newsArticles[index] = {
+                        title: document.getElementById('editTitle').value,
+                        description: document.getElementById('editDescription').value,
+                        author: document.getElementById('editAuthor').value,
+                        content: document.getElementById('editContent').value,
+                        image: news.image 
+                    };
+                    displayNews();
+                    editModal.hide();
+                }
             };
         }
 
@@ -260,34 +313,39 @@
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
             const author = document.getElementById('author').value;
-
             const content = document.getElementById('content').value;
-
-            newsArticles.push({ title, description, author, content });
-            displayNews();
-            event.target.reset();
-        })
+            const file = document.getElementById('fileInput').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageData = e.target.result;
+                    newsArticles.push({ 
+                        title, 
+                        description, 
+                        author, 
+                        content,
+                        image: imageData 
+                    });
+                    displayNews();
+                    event.target.reset();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                newsArticles.push({ 
+                    title, 
+                    description, 
+                    author, 
+                    content,
+                    image: null 
+                });
+                displayNews();
+                event.target.reset();
+            }
+        });
         function logout() {
             sessionStorage.clear();
             window.location.href = "index.html";
         };
-        const fileInput = document.getElementById('fileInput');
-
-fileInput.addEventListener('change', () => {
-    const file = fileInput.files[0];
-
-    if (file) {
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            document.body.appendChild(img);
-        };
-
-        reader.readAsDataURL(file);
-    }
-});
     </script>
 </body>
 </html>
