@@ -146,7 +146,9 @@
                 li.innerHTML = `
                     <div class="w-75">
                         <h5><strong>${news.title}</strong></h5>
+                        <p><strong>Description:</strong> ${news.description}</p>
                         <p><strong>Author:</strong> ${news.author}</p>
+                        <p><strong>Content:</strong> ${news.content}</p>
                         ${news.image ? `<img src="${news.image}" alt="News image" style="max-width: 200px; margin: 10px 0;">` : ''}
                     </div>
                     <div>
@@ -211,6 +213,7 @@
 
         function toggleImageSize(imgElement) {
             if (imgElement.style.position === 'fixed') {
+                // Return to normal size
                 imgElement.style.position = 'static';
                 imgElement.style.top = 'auto';
                 imgElement.style.left = 'auto';
@@ -220,6 +223,7 @@
                 imgElement.style.backgroundColor = 'transparent';
                 imgElement.style.margin = '10px 0';
             } else {
+                // Expand to full screen
                 imgElement.style.position = 'fixed';
                 imgElement.style.top = '0';
                 imgElement.style.left = '0';
@@ -280,32 +284,7 @@
                 displayNews();
             }
         }
-
-        function inlineSearch() {
-            const searchValue = document.getElementById('searchInput').value.toLowerCase();
-            const filteredArticles = newsArticles.filter(news => 
-                news.title.toLowerCase().includes(searchValue) ||
-                news.author.toLowerCase().includes(searchValue)
-            )
-            newsContainer.innerHTML = '';
-            filteredArticles.forEach((news, index) => {
-                const li = document.createElement('li');
-                li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-                li.innerHTML = `
-                    <div>
-                        <h5><strong>${news.title}</strong></h5>
-                        <p><strong>Author:</strong> ${news.author}</p>
-                    </div>
-                    <div>
-                        <button class="btn btn-warning" onclick="viewDetails(${index})">View</button>
-                        <button class="btn btn-secondary" onclick="editNews(${index})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteNews(${index})">Delete</button>
-                    </div>
-                `;
-                newsContainer.appendChild(li);
-            })
-        }
-
+        
         document.getElementById('add-news-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const title = document.getElementById('title').value;
